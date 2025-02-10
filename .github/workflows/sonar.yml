@@ -1,1 +1,53 @@
+name: Sonar
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sonar:
+    name: Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.2.0
+        with:
+          node-version: '23'  # specify your Node.js version
+          
+      - name: Cache SonarQube dependencies
+        uses: actions/cache@v4.2.0
+        with:
+          path: ~/.sonar/cache  # Path where SonarQube stores its cache (this can vary)
+          key: ${{ runner.os }}-sonar # Cache key
+          restore-keys: |
+            ${{ runner.os }}-sonar
+
+      - name: Cache npm cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+            
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Run SonarQube scanner
+      - name: Build and analyse
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
