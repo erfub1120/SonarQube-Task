@@ -46,8 +46,14 @@ jobs:
 
       # Run SonarQube scanner
       - name: Build and analyse
-        uses: SonarSource/sonarqube-scan-action@v4
+       # uses: SonarSource/sonarqube-scan-action@v4
+        run: |
+          npx sonar-scanner -X \
+            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_PROJECT_KEY:  sonardemo
 
